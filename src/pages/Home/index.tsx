@@ -20,39 +20,14 @@ import {
   SmartContractAbi,
   SmartContract,
 } from "@elrondnetwork/erdjs";
-import { promises } from "fs";
+import promises from "fs";
 
 import logo from "./logo.png";
 import gif1 from "./gif1.gif";
+import AbiJson from "./elven-nft-minter.abi.json";
 import "./Homeindex.css";
+import { stringify } from "querystring";
 
-async function abi() {
-  let networkProvider = new ProxyNetworkProvider(
-    "https://devnet-gateway.elrond.com"
-  );
-
-  let networkConfig = await networkProvider.getNetworkConfig();
-  console.log(networkConfig.MinGasPrice);
-  console.log(networkConfig.ChainID);
-
-  let jsonContent = await promises.readFile("elven-nft-minter.abi.json", {
-    encoding: "utf8",
-  });
-  let json = JSON.parse(jsonContent);
-  let abi;
-  let abiRegistry = AbiRegistry.load(json).then(
-    (result) => (abi = new SmartContractAbi(result, ["test"]))
-  );
-  let contract = new SmartContract({
-    address: new Address("erd1..."),
-    abi: abi,
-  });
-  console.log(contract);
-}
-
-abi().then((res) => {
-  console.log(res);
-});
 interface Props {
   title: string;
   initialCount: number;
@@ -61,6 +36,7 @@ interface Props {
 const Home: FC<Props> = ({ title, initialCount }) => {
   const [count, setCount] = useState(0);
   const { address } = useGetAccountInfo();
+
   const add = (factor = 1) => {
     if (factor < 0) {
       if (count > 0) setCount(count + factor);
@@ -68,6 +44,39 @@ const Home: FC<Props> = ({ title, initialCount }) => {
       setCount(count + factor);
     }
   };
+
+  
+
+  const abi = async () => {
+    let networkProvider = new ProxyNetworkProvider(
+      "https://devnet-gateway.elrond.com"
+    );
+
+    let networkConfig = await networkProvider.getNetworkConfig();
+    console.log(networkConfig.MinGasPrice);
+    console.log(networkConfig.ChainID);
+    let AbiText = JSON.stringify(AbiJson);
+    let jsonContent = AbiText;
+    console.log(AbiText);
+    console.log(AbiRegistry);
+    let json = JSON.parse(jsonContent);
+    let abi;
+    let abiRegistry = AbiRegistry.load(json).then(
+      (result) => (abi = new SmartContractAbi(result, ["test"]))
+    );
+    let contract = new SmartContract({
+      address: new Address(
+        "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7"
+      ),
+      abi: abi,
+    });
+    console.log(contract);
+    return contract;
+  };
+
+  abi().then((res) => {
+    console.log(res);
+  });
 
   return (
     <div
