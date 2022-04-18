@@ -44,7 +44,7 @@ async function abi() {
     (result) => (abi = new SmartContractAbi(result, ["test"]))
   );
   let contract = new SmartContract({
-    address: new Address("erd1..."),
+    address: new Address("erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7"),
     abi: abi,
   });
   console.log(contract);
