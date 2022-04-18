@@ -1167,6 +1167,17 @@
   "resolved" "https://registry.npmjs.org/@elrondnetwork/dapp-utils/-/dapp-utils-0.1.3.tgz"
   "version" "0.1.3"
 
+"@elrondnetwork/erdjs-network-providers@^0.1.5":
+  "integrity" "sha512-7NGoU2rBZk1NkxaO2hIs/4eN8ZYEOWYOkDCpTc35diEOoHjkk13Ov+6qtNjkyKbWn5bnEjdtwMKddc6ilwwR9Q=="
+  "resolved" "https://registry.npmjs.org/@elrondnetwork/erdjs-network-providers/-/erdjs-network-providers-0.1.5.tgz"
+  "version" "0.1.5"
+  dependencies:
+    "axios" "0.24.0"
+    "bech32" "1.1.4"
+    "bignumber.js" "9.0.1"
+    "buffer" "6.0.3"
+    "json-bigint" "1.0.0"
+
 "@elrondnetwork/erdjs@^9.0.3", "@elrondnetwork/erdjs@9.0.3", "@elrondnetwork/erdjs@9.x":
   "integrity" "sha512-xOBzlFXkx2avMFTrZrgKoSSJbBUlZnSobpDaMzs4hqvUYr/xAN2y+nbMFJqaLcfKxf5ALGolnbqhprHLNfWpEQ=="
   "resolved" "https://registry.npmjs.org/@elrondnetwork/erdjs/-/erdjs-9.0.3.tgz"
