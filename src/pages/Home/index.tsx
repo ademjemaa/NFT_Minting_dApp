@@ -20,13 +20,13 @@ import {
   SmartContractAbi,
   SmartContract,
 } from "@elrondnetwork/erdjs";
-import promises from "fs";
-
+import { promises } from "fs";
+import * as fs from "fs";
 import logo from "./logo.png";
 import gif1 from "./gif1.gif";
-import AbiJson from "./elven-nft-minter.abi.json";
 import "./Homeindex.css";
 import { stringify } from "querystring";
+import data from './test.json';
 
 interface Props {
   title: string;
@@ -45,36 +45,40 @@ const Home: FC<Props> = ({ title, initialCount }) => {
     }
   };
 
+  function createSmartContractInstance(abi?: AbiRegistry, address?: string) {
+    const contract = new SmartContract({
+      address: address ? new Address(address) : undefined,
+      abi:
+        abi &&
+        new SmartContractAbi(
+          abi,
+          abi.interfaces.map((iface) => iface.name)
+        ),
+    });
+    return contract;
+  }
+
   const abi = async () => {
     let networkProvider = new ProxyNetworkProvider(
       "https://devnet-gateway.elrond.com"
     );
-
     let networkConfig = await networkProvider.getNetworkConfig();
-    console.log(networkConfig.MinGasPrice);
-    console.log(networkConfig.ChainID);
-    let AbiText = JSON.stringify(AbiJson);
-    let jsonContent = AbiText;
-    console.log(AbiText);
-    console.log(AbiRegistry);
-    let json = JSON.parse(jsonContent);
-    let abi;
-    let abiRegistry = AbiRegistry.load(json).then(
-      (result) => (abi = new SmartContractAbi(result, ["test"]))
-    );
-    let contract = new SmartContract({
-      address: new Address(
-        "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7"
-      ),
-      abi: abi,
-    });
+    let jsonContent = JSON.parse(JSON.stringify(data));
+    //let abi = new SmartContractAbi(abiRegistry, ["MyContract"]);
+    let registry = new AbiRegistry().extend(jsonContent);
+    let abiRegistry = registry.remapToKnownTypes();
+    console.log(abiRegistry);
+    
+    let contract = createSmartContractInstance(abiRegistry, "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7")
     console.log(contract);
+    console.log(contract.getAbi().getEndpoint("getNftPrice"));
+    let interaction = contract.methods.getNftPrice();
+    let query = interaction.buildQuery();
+
     return contract;
   };
 
-  abi().then((res) => {
-    console.log(res);
-  });
+  console.log(abi());
 
   return (
     <div
@@ -169,7 +173,7 @@ const Home: FC<Props> = ({ title, initialCount }) => {
               ) : null}
               <br />
               <br />
-              <p className="mb-3 Styled">
+              <p className="mb-3">
                 This is the official N4P foresters NFTs Minting Site
                 <br /> Login using your Elrond wallet.
               </p>
