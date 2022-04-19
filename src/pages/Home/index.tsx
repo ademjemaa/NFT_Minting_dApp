@@ -45,8 +45,6 @@ const Home: FC<Props> = ({ title, initialCount }) => {
     }
   };
 
-  
-
   const abi = async () => {
     let networkProvider = new ProxyNetworkProvider(
       "https://devnet-gateway.elrond.com"
@@ -171,7 +169,7 @@ const Home: FC<Props> = ({ title, initialCount }) => {
               ) : null}
               <br />
               <br />
-              <p className="mb-3">
+              <p className="mb-3 Styled">
                 This is the official N4P foresters NFTs Minting Site
                 <br /> Login using your Elrond wallet.
               </p>
