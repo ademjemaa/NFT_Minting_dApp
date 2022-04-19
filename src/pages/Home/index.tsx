@@ -19,6 +19,9 @@ import {
   AbiRegistry,
   SmartContractAbi,
   SmartContract,
+  ContractFunction,
+  IProvider,
+  ProxyProvider,
 } from "@elrondnetwork/erdjs";
 import { promises } from "fs";
 import * as fs from "fs";
@@ -45,6 +48,10 @@ const Home: FC<Props> = ({ title, initialCount }) => {
     }
   };
 
+  const syncProviderConfig = async (provider: IProvider) => {
+    return NetworkConfig.getDefault().sync(provider);
+  };
+
   function createSmartContractInstance(abi?: AbiRegistry, address?: string) {
     const contract = new SmartContract({
       address: address ? new Address(address) : undefined,
@@ -63,6 +70,8 @@ const Home: FC<Props> = ({ title, initialCount }) => {
       "https://devnet-gateway.elrond.com"
     );
     let networkConfig = await networkProvider.getNetworkConfig();
+    let provider = new ProxyProvider("https://devnet-gateway.elrond.com");
+    await syncProviderConfig(provider);
     let jsonContent = JSON.parse(JSON.stringify(data));
     //let abi = new SmartContractAbi(abiRegistry, ["MyContract"]);
     let registry = new AbiRegistry().extend(jsonContent);
@@ -72,9 +81,19 @@ const Home: FC<Props> = ({ title, initialCount }) => {
     let contract = createSmartContractInstance(abiRegistry, "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7")
     console.log(contract);
     console.log(contract.getAbi().getEndpoint("getNftPrice"));
-    let interaction = contract.methods.getNftPrice();
-    let query = interaction.buildQuery();
-
+    let response = await contract.runQuery(provider, {
+      func: new ContractFunction("getNftPrice"),
+      args: [],
+      caller: new Address("erd16ht3gyfw6xfcm9s89swczscas85y882am3atdar487mz3dzy5uhszny4gn")
+    });
+    
+    let queryResponse = {
+      returnCode: response.returnCode,
+      returnMessage: response.returnMessage,
+      getReturnDataParts: () => response.returnData.map((item) => Buffer.from(item || "", "base64"))
+  };
+  console.log("query done");
+  console.log(queryResponse.getReturnDataParts());
     return contract;
   };
 
