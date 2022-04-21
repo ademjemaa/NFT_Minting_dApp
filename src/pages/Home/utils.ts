@@ -1,4 +1,5 @@
 import {
+<<<<<<< HEAD
   ProxyProvider,
   IProvider,
   NetworkConfig,
@@ -33,6 +34,41 @@ import data from "./wallet.json";
 
 let LoggedUseraddress = "";
 
+=======
+    ProxyProvider,
+    IProvider,
+    NetworkConfig,
+    SmartContract,
+    Account,
+    parseUserKey,
+    UserSigner,
+    SmartContractAbi,
+    Code,
+    GasLimit,
+    AbiRegistry,
+    Address,
+    ContractFunction,
+    BytesValue,
+    Balance,
+    U32Value,
+    BigUIntValue,
+    AddressValue,
+    Transaction,
+    TransactionPayload,
+    QueryResponse,
+    TypedValue,
+    CodeMetadata,
+    BooleanValue,
+    List,
+    ListType,
+    AddressType,
+    ISigner,
+  } from '@elrondnetwork/erdjs';
+import { sign } from 'crypto';
+import { Provider } from 'react';
+
+  import data from './wallet.json';
+>>>>>>> 0e64c7b60397fe997585a903ec8399f07b191c87
 export const getMintTransaction = (
   contractAddress: string,
   baseGasLimit: number,
@@ -70,6 +106,7 @@ export const commonTxOperations = async (
   console.log(`Transaction: /transactions/${txHash}`);
 };
 
+<<<<<<< HEAD
 export const GetAddress = async (LoggedUserAddress: string) => {
   LoggedUseraddress = LoggedUserAddress;
 };
@@ -91,3 +128,17 @@ export const publicEndpointSetup = async (provider: ProxyProvider) => {
     provider,
   };
 };
+=======
+  export const publicEndpointSetup = async (provider: ProxyProvider) => {
+    let keyFileObject = JSON.parse(JSON.stringify(data));
+    // Provider type based on initial configuration
+    const signer = UserSigner.fromWallet(keyFileObject, "u!D?G8Tf48fYL28");
+    let userAccount = new Account(signer.getAddress());
+    console.log(signer);
+    return {
+      signer,
+      userAccount,
+      provider,
+    };
+  };
+>>>>>>> 0e64c7b60397fe997585a903ec8399f07b191c87

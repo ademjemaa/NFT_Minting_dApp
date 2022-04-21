@@ -100,6 +100,7 @@ export const Home: FC<Props> = ({ title, initialCount }) => {
     );
     console.log(contract);
     console.log(contract.getAbi().getEndpoint("getNftPrice"));
+<<<<<<< HEAD
     let response = await contract.runQuery(provider, {
       func: new ContractFunction("getNftPrice"),
       args: [],
@@ -114,6 +115,11 @@ export const Home: FC<Props> = ({ title, initialCount }) => {
     );
     const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
     await commonTxOperations(mintx, LoggedUserAccount, signer, provider);
+=======
+    let mintx = getMintTransaction("erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7", 14000000, 2);
+    const { userAccount, signer} = await publicEndpointSetup(provider);
+    await commonTxOperations(mintx, userAccount, signer, provider);
+>>>>>>> 0e64c7b60397fe997585a903ec8399f07b191c87
     return contract;
   };
 
