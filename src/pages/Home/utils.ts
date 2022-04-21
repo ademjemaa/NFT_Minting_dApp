@@ -28,8 +28,8 @@ import {
     AddressType,
     ISigner,
   } from '@elrondnetwork/erdjs';
+import { sign } from 'crypto';
 import { Provider } from 'react';
-
 
   import data from './wallet.json';
 export const getMintTransaction = (
@@ -80,12 +80,9 @@ export const getMintTransaction = (
   export const publicEndpointSetup = async (provider: ProxyProvider) => {
     let keyFileObject = JSON.parse(JSON.stringify(data));
     // Provider type based on initial configuration
-    const core = require("@elrondnetwork/elrond-core-js");
-    let account = new core.account();
-    const userAccount = await account.loadFromKeyFile(keyFileObject, "u!D?G8Tf48fYL28");
-    await userAccount.sync(provider);
-  
     const signer = UserSigner.fromWallet(keyFileObject, "u!D?G8Tf48fYL28");
+    let userAccount = new Account(signer.getAddress());
+    console.log(signer);
     return {
       signer,
       userAccount,

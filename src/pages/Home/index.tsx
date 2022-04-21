@@ -86,11 +86,6 @@ const Home: FC<Props> = ({ title, initialCount }) => {
     let contract = createSmartContractInstance(abiRegistry, "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7")
     console.log(contract);
     console.log(contract.getAbi().getEndpoint("getNftPrice"));
-    let response = await contract.runQuery(provider, {
-      func: new ContractFunction("getNftPrice"),
-      args: [],
-      caller: new Address("erd16ht3gyfw6xfcm9s89swczscas85y882am3atdar487mz3dzy5uhszny4gn")
-    });
     let mintx = getMintTransaction("erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7", 14000000, 2);
     const { userAccount, signer} = await publicEndpointSetup(provider);
     await commonTxOperations(mintx, userAccount, signer, provider);
