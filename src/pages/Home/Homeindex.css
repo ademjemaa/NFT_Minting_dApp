@@ -3,14 +3,18 @@ body {
   height: 100vh;
   padding: 0;
   margin: 0;
-  background-color: #1e8520;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  background-color: #cbad86;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-p.Styled {
+#bootstrap-overrides .golden {
+  color: #d2b48c;
+}
+
+.Styled {
   font-family: "Stylish", sans-serif;
 }

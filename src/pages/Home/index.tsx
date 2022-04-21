@@ -31,17 +31,28 @@ import logo from "./logo.png";
 import gif1 from "./gif1.gif";
 import "./Homeindex.css";
 import { stringify } from "querystring";
-import data from './test.json';
-import { commonTxOperations, getMintTransaction, publicEndpointSetup } from "./utils";
+import data from "./test.json";
+import {
+  commonTxOperations,
+  getMintTransaction,
+  publicEndpointSetup,
+} from "./utils";
+import { propTypes } from "react-bootstrap/esm/Image";
 
 interface Props {
   title: string;
   initialCount: number;
+  SCaddress: Address;
 }
 
-const Home: FC<Props> = ({ title, initialCount }) => {
+export const Home: FC<Props> = ({ title, initialCount }) => {
   const [count, setCount] = useState(0);
   const { address } = useGetAccountInfo();
+  const [userAddress, setUserAdress] = useState(address);
+
+  const getAddress = () => {
+    return address;
+  };
 
   const add = (factor = 1) => {
     if (factor < 0) {
@@ -56,9 +67,9 @@ const Home: FC<Props> = ({ title, initialCount }) => {
     //return UserSigner.fromWallet() get user wallet signer
   };
 
-  function createSmartContractInstance(abi?: AbiRegistry, address?: string) {
+  function createSmartContractInstance(abi?: AbiRegistry, SCaddress?: string) {
     const contract = new SmartContract({
-      address: address ? new Address(address) : undefined,
+      address: SCaddress ? new Address(SCaddress) : undefined,
       abi:
         abi &&
         new SmartContractAbi(
@@ -66,7 +77,7 @@ const Home: FC<Props> = ({ title, initialCount }) => {
           abi.interfaces.map((iface) => iface.name)
         ),
     });
-    
+
     return contract;
   }
 
@@ -82,18 +93,27 @@ const Home: FC<Props> = ({ title, initialCount }) => {
     let registry = new AbiRegistry().extend(jsonContent);
     let abiRegistry = registry.remapToKnownTypes();
     console.log(abiRegistry);
-    
-    let contract = createSmartContractInstance(abiRegistry, "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7")
+
+    let contract = createSmartContractInstance(
+      abiRegistry,
+      "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7"
+    );
     console.log(contract);
     console.log(contract.getAbi().getEndpoint("getNftPrice"));
     let response = await contract.runQuery(provider, {
       func: new ContractFunction("getNftPrice"),
       args: [],
-      caller: new Address("erd16ht3gyfw6xfcm9s89swczscas85y882am3atdar487mz3dzy5uhszny4gn")
+      caller: new Address(
+        "erd16ht3gyfw6xfcm9s89swczscas85y882am3atdar487mz3dzy5uhszny4gn"
+      ),
     });
-    let mintx = getMintTransaction("erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7", 14000000, 2);
-    const { userAccount, signer} = await publicEndpointSetup(provider);
-    await commonTxOperations(mintx, userAccount, signer, provider);
+    let mintx = getMintTransaction(
+      "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7",
+      14000000,
+      2
+    );
+    const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
+    await commonTxOperations(mintx, LoggedUserAccount, signer, provider);
     return contract;
   };
 
@@ -101,12 +121,16 @@ const Home: FC<Props> = ({ title, initialCount }) => {
 
   return (
     <div
-      className="d-flex flex-fill align-items-center container"
+      className="d-flex flex-fill align-items-center  rounded-pill"
       style={{
-        backgroundColor: "#1e8520",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
+        height: "70vh",
+        paddingTop: "25%",
+        marginTop: "15%",
+        marginRight:"5%",
+        marginLeft:"5%",
+        marginBottom: "15%",
+        paddingBottom: "40%",
+        backgroundColor: "#2e765e",
       }}
     >
       <div className="row w-100 justify-content-between">
@@ -118,33 +142,40 @@ const Home: FC<Props> = ({ title, initialCount }) => {
             style={{
               width: "370px",
               height: "320px",
-              margin: "15px",
+              marginTop: "30%",
               padding: "25px",
             }}
           />
 
-          <div className="card shadow-sm rounded border border-warning p-4">
+          <div
+            className="card shadow-sm rounded-pill border border-warning p-4"
+            style={{
+              width: "100%",
+              height: "60%",
+            }}
+          >
             <div className="card-body text-center">
               <img
                 src={String(gif1)}
                 className="rounded border rounded-circle mx-auto d-block"
                 style={{
-                  width: "320px",
-                  height: "320px",
+                  width: "50%",
+                  height: "50%",
                   border: "10px",
-                  margin: "15px",
+                  margin: "2%",
                 }}
                 alt="gif"
               ></img>
               <h2 className="mb-3" data-testid="title">
                 {dAppName}
               </h2>
-              <div className="container">
+              <div className="container ">
                 {address ? (
                   <button
-                    className="btn btn-warning btn-lg mt-3 text-white"
+                    className="btn btn-lg mt-3 text-white"
                     style={{
                       margin: "10px",
+                      backgroundColor: "#00665d",
                     }}
                     onClick={() => add()}
                   >
@@ -154,9 +185,10 @@ const Home: FC<Props> = ({ title, initialCount }) => {
                 {address ? <h5>{count}</h5> : null}
                 {address ? (
                   <button
-                    className="btn btn-secondary btn-lg mt-3 text-white"
+                    className="btn btn-lg mt-3 text-white"
                     style={{
                       margin: "5px",
+                      backgroundColor: "#d2b48c",
                     }}
                     onClick={() => add(-1)}
                   >
@@ -166,9 +198,11 @@ const Home: FC<Props> = ({ title, initialCount }) => {
               </div>
               {address ? (
                 <button
-                  className="btn btn-warning btn-lg mt-3 text-white"
+                  className="btn btn-lg mt-3 text-white golden"
                   style={{
                     margin: "5px",
+
+                    backgroundColor: "#d2b48c",
                   }}
                 >
                   Mint
@@ -176,9 +210,10 @@ const Home: FC<Props> = ({ title, initialCount }) => {
               ) : null}{" "}
               {address ? (
                 <button
-                  className="btn btn-secondary btn-lg mt-3 text-white"
+                  className="btn btn-lg mt-3 text-white"
                   style={{
                     margin: "5px",
+                    backgroundColor: "#00665d",
                   }}
                   onClick={() => {
                     window.open(
@@ -199,18 +234,13 @@ const Home: FC<Props> = ({ title, initialCount }) => {
               {!address ? (
                 <Link
                   to={routeNames.unlock}
-                  className="btn btn-primary mt-3 text-white"
+                  className="btn btn-primary mt-3 text-white golden"
                   data-testid="loginBtn"
                 >
                   Login
                 </Link>
               ) : null}
             </div>
-            <img
-              src={String(logo)}
-              className="rounded float-right"
-              alt="..."
-            ></img>
           </div>
 
           <p
