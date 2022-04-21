@@ -22,6 +22,8 @@ import {
   ContractFunction,
   IProvider,
   ProxyProvider,
+  UserSigner,
+  parseUserKey,
 } from "@elrondnetwork/erdjs";
 import { promises } from "fs";
 import * as fs from "fs";
@@ -30,6 +32,7 @@ import gif1 from "./gif1.gif";
 import "./Homeindex.css";
 import { stringify } from "querystring";
 import data from './test.json';
+import { commonTxOperations, getMintTransaction, publicEndpointSetup } from "./utils";
 
 interface Props {
   title: string;
@@ -50,6 +53,7 @@ const Home: FC<Props> = ({ title, initialCount }) => {
 
   const syncProviderConfig = async (provider: IProvider) => {
     return NetworkConfig.getDefault().sync(provider);
+    //return UserSigner.fromWallet() get user wallet signer
   };
 
   function createSmartContractInstance(abi?: AbiRegistry, address?: string) {
@@ -62,6 +66,7 @@ const Home: FC<Props> = ({ title, initialCount }) => {
           abi.interfaces.map((iface) => iface.name)
         ),
     });
+    
     return contract;
   }
 
@@ -86,14 +91,9 @@ const Home: FC<Props> = ({ title, initialCount }) => {
       args: [],
       caller: new Address("erd16ht3gyfw6xfcm9s89swczscas85y882am3atdar487mz3dzy5uhszny4gn")
     });
-    
-    let queryResponse = {
-      returnCode: response.returnCode,
-      returnMessage: response.returnMessage,
-      getReturnDataParts: () => response.returnData.map((item) => Buffer.from(item || "", "base64"))
-  };
-  console.log("query done");
-  console.log(queryResponse.getReturnDataParts());
+    let mintx = getMintTransaction("erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7", 14000000, 2);
+    const { userAccount, signer} = await publicEndpointSetup(provider);
+    await commonTxOperations(mintx, userAccount, signer, provider);
     return contract;
   };
 
