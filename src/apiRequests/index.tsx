@@ -1,5 +1,5 @@
 import axios from "axios";
-import { promises } from "fs";
+
 interface GetLatestTransactionsType {
   apiAddress: string;
   address: string;

@@ -1,43 +1,41 @@
 import React, { FC, useState } from "react";
-import { logout, useGetAccountInfo } from "@elrondnetwork/dapp-core";
+import {
+  transactionServices,
+  useGetAccountInfo,
+  useGetNetworkConfig,
+  refreshAccount,
+} from "@elrondnetwork/dapp-core";
 import { Link } from "react-router-dom";
 import { dAppName } from "config";
 import { routeNames } from "routes";
 import { ProxyNetworkProvider } from "@elrondnetwork/erdjs-network-providers";
 import {
-  Transaction,
-  Nonce,
-  Balance,
-  GasPrice,
-  GasLimit,
-  TransactionPayload,
-  ChainID,
-  TransactionVersion,
   Address,
   NetworkConfig,
-  GasPriceModifier,
   AbiRegistry,
   SmartContractAbi,
   SmartContract,
   ContractFunction,
   IProvider,
   ProxyProvider,
-  UserSigner,
-  parseUserKey,
 } from "@elrondnetwork/erdjs";
-import { promises } from "fs";
-import * as fs from "fs";
+//import { promises } from "fs";
+//import * as fs from "fs";
+import { getTransactions } from "apiRequests";
+import { contractAddress } from "config";
 import logo from "./logo.png";
 import gif1 from "./gif1.gif";
+import { StateType } from "./types";
 import "./Homeindex.css";
-import { stringify } from "querystring";
+//import { stringify } from "querystring";
 import data from "./test.json";
 import {
   commonTxOperations,
   getMintTransaction,
   publicEndpointSetup,
+  GetAddress,
 } from "./utils";
-import { propTypes } from "react-bootstrap/esm/Image";
+//import { propTypes } from "react-bootstrap/esm/Image";
 
 interface Props {
   title: string;
@@ -45,14 +43,45 @@ interface Props {
   SCaddress: Address;
 }
 
-export const Home: FC<Props> = ({ title, initialCount }) => {
+export const Home: FC<Props> = () => {
   const [count, setCount] = useState(0);
   const { address } = useGetAccountInfo();
-  const [userAddress, setUserAdress] = useState(address);
 
-  const getAddress = () => {
-    return address;
+  /**************************************************Block Jdid **************************/
+  const { success, fail, hasActiveTransactions } =
+    transactionServices.useGetActiveTransactionsStatus();
+
+  const {
+    network: { apiAddress },
+  } = useGetNetworkConfig();
+  //console.log("******************", apiAddress); //https://devnet-api.elrond.com
+
+  const [state, setState] = React.useState<StateType>({
+    transactions: [],
+    transactionsFetched: undefined,
+  });
+  const account = useGetAccountInfo();
+  //console.log("***ACCOUNT ADRESS***:", account.address); //erd14vwdlxxn93nxpph830f00y5g6qal3nndp7mtjg00verhtykp9nnqrmethw
+
+  /*const fetchData = () => {
+    if (success || fail || !hasActiveTransactions) {
+      getTransactions({
+        apiAddress,
+        address: account.address,
+        timeout: 3000,
+        contractAddress,
+      }).then(({ data, success: transactionsFetched }) => {
+        refreshAccount();
+        setState({
+          transactions: data,
+          transactionsFetched,
+        });
+      });
+    }
   };
+  React.useEffect(fetchData, [success, fail, hasActiveTransactions;*/ //Block Hedha fetchData() pre-implemented l9ito f template hedhy
+  // user account mawjoud w ye5dem, el config marbout zeda jebt meno apiAddress. taba3 bel refs ato tefhem
+  /*************************************************************************************/
 
   const add = (factor = 1) => {
     if (factor < 0) {
@@ -87,6 +116,7 @@ export const Home: FC<Props> = ({ title, initialCount }) => {
     );
     let networkConfig = await networkProvider.getNetworkConfig();
     let provider = new ProxyProvider("https://devnet-gateway.elrond.com");
+    await GetAddress(address);
     await syncProviderConfig(provider);
     let jsonContent = JSON.parse(JSON.stringify(data));
     //let abi = new SmartContractAbi(abiRegistry, ["MyContract"]);
@@ -100,7 +130,6 @@ export const Home: FC<Props> = ({ title, initialCount }) => {
     );
     console.log(contract);
     console.log(contract.getAbi().getEndpoint("getNftPrice"));
-<<<<<<< HEAD
     let response = await contract.runQuery(provider, {
       func: new ContractFunction("getNftPrice"),
       args: [],
@@ -115,11 +144,7 @@ export const Home: FC<Props> = ({ title, initialCount }) => {
     );
     const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
     await commonTxOperations(mintx, LoggedUserAccount, signer, provider);
-=======
-    let mintx = getMintTransaction("erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7", 14000000, 2);
-    const { userAccount, signer} = await publicEndpointSetup(provider);
-    await commonTxOperations(mintx, userAccount, signer, provider);
->>>>>>> 0e64c7b60397fe997585a903ec8399f07b191c87
+    console.log(LoggedUserAccount);
     return contract;
   };
 
@@ -132,8 +157,8 @@ export const Home: FC<Props> = ({ title, initialCount }) => {
         height: "70vh",
         paddingTop: "25%",
         marginTop: "15%",
-        marginRight:"5%",
-        marginLeft:"5%",
+        marginRight: "5%",
+        marginLeft: "5%",
         marginBottom: "15%",
         paddingBottom: "40%",
         backgroundColor: "#2e765e",
