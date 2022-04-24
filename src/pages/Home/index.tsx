@@ -5,6 +5,7 @@ import {
   useGetNetworkConfig,
   refreshAccount,
 } from "@elrondnetwork/dapp-core";
+import axios, { AxiosResponse } from "axios";
 import { Link } from "react-router-dom";
 import { dAppName } from "config";
 import { routeNames } from "routes";
@@ -23,6 +24,7 @@ import {
 } from "@elrondnetwork/erdjs";
 //import { promises } from "fs";
 //import * as fs from "fs";
+import { TransactionOnNetwork } from "@elrondnetwork/erdjs/out/transactionOnNetwork";
 import { getTransactions } from "apiRequests";
 import { contractAddress } from "config";
 import logo from "./logo.png";
@@ -38,6 +40,7 @@ import {
   GetAddress,
 } from "./utils";
 import { sign } from "crypto";
+import { config } from "process";
 //import { propTypes } from "react-bootstrap/esm/Image";
 
 interface Props {
@@ -154,8 +157,12 @@ export const Home: FC<Props> = () => {
     await mintx.send(provider);
     await mintx.awaitExecuted(provider);
     const txHash = mintx.getHash();
-    console.log(txHash);
+    console.log(txHash.toString());
+    axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
     console.log(`Transaction: /transactions/${txHash}`);
+    let explorer = `https://devnet-gateway.elrond.com/transaction/${txHash}?withResults=true`;
+    let res = await axios.get(explorer);
+    console.log(res);
     return contract;
   };
 
