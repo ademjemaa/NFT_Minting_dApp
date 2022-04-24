@@ -18,6 +18,8 @@ import {
   ContractFunction,
   IProvider,
   ProxyProvider,
+  Nonce,
+  QueryResponse,
 } from "@elrondnetwork/erdjs";
 //import { promises } from "fs";
 //import * as fs from "fs";
@@ -35,6 +37,7 @@ import {
   publicEndpointSetup,
   GetAddress,
 } from "./utils";
+import { sign } from "crypto";
 //import { propTypes } from "react-bootstrap/esm/Image";
 
 interface Props {
@@ -61,9 +64,9 @@ export const Home: FC<Props> = () => {
     transactionsFetched: undefined,
   });
   const account = useGetAccountInfo();
-  //console.log("***ACCOUNT ADRESS***:", account.address); //erd14vwdlxxn93nxpph830f00y5g6qal3nndp7mtjg00verhtykp9nnqrmethw
+  console.log("***ACCOUNT ADRESS***:", account.address); //erd14vwdlxxn93nxpph830f00y5g6qal3nndp7mtjg00verhtykp9nnqrmethw
 
-  /*const fetchData = () => {
+  const fetchData = () => {
     if (success || fail || !hasActiveTransactions) {
       getTransactions({
         apiAddress,
@@ -79,9 +82,7 @@ export const Home: FC<Props> = () => {
       });
     }
   };
-  React.useEffect(fetchData, [success, fail, hasActiveTransactions;*/ //Block Hedha fetchData() pre-implemented l9ito f template hedhy
-  // user account mawjoud w ye5dem, el config marbout zeda jebt meno apiAddress. taba3 bel refs ato tefhem
-  /*************************************************************************************/
+  React.useEffect(fetchData, [success, fail, hasActiveTransactions]);
 
   const add = (factor = 1) => {
     if (factor < 0) {
@@ -143,8 +144,18 @@ export const Home: FC<Props> = () => {
       2
     );
     const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
-    await commonTxOperations(mintx, LoggedUserAccount, signer, provider);
+    console.log(LoggedUserAccount.nonce);
+    mintx.setNonce(LoggedUserAccount.getNonceThenIncrement());
+    console.log(mintx.getNonce());
+    console.log(LoggedUserAccount.nonce);
+    signer.sign(mintx);
+    // await commonTxOperations(mintx, LoggedUserAccount, signer, provider);
     console.log(LoggedUserAccount);
+    await mintx.send(provider);
+    await mintx.awaitExecuted(provider);
+    const txHash = mintx.getHash();
+    console.log(txHash);
+    console.log(`Transaction: /transactions/${txHash}`);
     return contract;
   };
 

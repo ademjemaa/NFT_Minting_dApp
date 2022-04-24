@@ -11,6 +11,7 @@ import {
   U32Value,
   Transaction,
   ISigner,
+  QueryResponse,
 } from "@elrondnetwork/erdjs";
 //import { Provider } from "react";
 import data from "./wallet.json";
@@ -32,8 +33,8 @@ export const getMintTransaction = (
     gasLimit: new GasLimit(
       baseGasLimit + (baseGasLimit / 1.4) * (tokensAmount - 1)
     ),
-    args: [new U32Value(tokens)],
-    value: Balance.fromString(tokenSellingPrice).times(tokens),
+    //args: [new U32Value(tokens)],
+    //value: Balance.fromString(tokenSellingPrice).times(tokens),
   });
 };
 
@@ -68,10 +69,20 @@ export const publicEndpointSetup = async (provider: ProxyProvider) => {
   // Provider type based on initial configuration
   let LoggedUserAddress = new Address(LoggedUseraddress);
   let LoggedUserAccount = new Account(LoggedUserAddress);
+  let syncc = await LoggedUserAccount.sync(provider);
+  console.log(syncc);
   const signer = UserSigner.fromWallet(keyFileObject, "u!D?G8Tf48fYL28");
   return {
     signer,
     LoggedUserAccount,
     provider,
   };
+};
+
+export const parseQueryResultString = (queryResponse: QueryResponse) => {
+  const resultBuff = Buffer.from(
+    queryResponse?.returnData?.[0],
+    'base64'
+  ).toString('utf8');
+  return resultBuff;
 };
