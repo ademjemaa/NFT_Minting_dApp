@@ -21,20 +21,34 @@ let LoggedUseraddress = "";
 export const getMintTransaction = (
   contractAddress: string,
   baseGasLimit: number,
-  tokensAmount: number
+  tokensAmount: number,
+  tokenSellingPrice: number,
 ) => {
-  const tokens = tokensAmount || 1;
-  const tokenSellingPrice = "500000000000000000";
   const contract = new SmartContract({
     address: new Address(contractAddress),
   });
   return contract.call({
     func: new ContractFunction("mint"),
     gasLimit: new GasLimit(
-      baseGasLimit + (baseGasLimit / 1.4) * (tokensAmount - 1)
+      baseGasLimit * (tokensAmount)
     ),
-    args: [new U32Value(tokens)],
-    value: Balance.fromString(tokenSellingPrice).times(tokens),
+    args: [new U32Value(tokensAmount)],
+    value: Balance.fromString(tokenSellingPrice.toString()).times(tokensAmount),
+  });
+};
+
+export const GetPrice = (
+  contractAddress: string,
+  baseGasLimit: number,
+) => {
+  const contract = new SmartContract({
+    address: new Address(contractAddress),
+  });
+  return contract.call({
+    func: new ContractFunction("getNftPrice"),
+    gasLimit: new GasLimit(
+      baseGasLimit
+    )
   });
 };
 

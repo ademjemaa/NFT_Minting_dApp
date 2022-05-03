@@ -39,6 +39,7 @@ import {
   getMintTransaction,
   publicEndpointSetup,
   GetAddress,
+  GetPrice,
 } from "./utils";
 import { sign } from "crypto";
 import { config } from "process";
@@ -123,51 +124,38 @@ export const Home: FC<Props> = () => {
     let provider = new ProxyProvider("https://devnet-gateway.elrond.com");
     await GetAddress(address);
     await syncProviderConfig(provider);
-    let jsonContent = JSON.parse(JSON.stringify(data));
-    //let abi = new SmartContractAbi(abiRegistry, ["MyContract"]);
-    let registry = new AbiRegistry().extend(jsonContent);
-    let abiRegistry = registry.remapToKnownTypes();
-    console.log(abiRegistry);
-
-    let contract = createSmartContractInstance(
-      abiRegistry,
-      "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7"
-    );
-    console.log(contract);
-    console.log(contract.getAbi().getEndpoint("getNftPrice"));
-    let response = await contract.runQuery(provider, {
-      func: new ContractFunction("getNftPrice"),
-      args: [],
-      caller: new Address(
-        "erd16ht3gyfw6xfcm9s89swczscas85y882am3atdar487mz3dzy5uhszny4gn"
-      ),
-    });
-    let mintx = getMintTransaction(
-      "erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7",
-      14000000,
-      2
+    let pricetx = GetPrice(
+      "erd1qqqqqqqqqqqqqpgqjwnulxe3eyevsgyslqqfw8ev5juwd6ew5uhsk8ye2g",
+      18000000,
     );
     const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
     console.log(LoggedUserAccount.nonce);
-    mintx.setNonce(LoggedUserAccount.getNonceThenIncrement());
-    console.log(mintx.getNonce());
-    console.log(LoggedUserAccount.nonce);
-    signer.sign(mintx);
-    // await commonTxOperations(mintx, LoggedUserAccount, signer, provider);
+    pricetx.setNonce(LoggedUserAccount.getNonceThenIncrement());
+    signer.sign(pricetx);
     console.log(LoggedUserAccount);
-    await mintx.send(provider);
-    await mintx.awaitExecuted(provider);
-    const txHash = mintx.getHash();
-    console.log(txHash.toString());
+    await pricetx.send(provider);
+    await pricetx.awaitExecuted(provider);
+    const txHash = pricetx.getHash();
     axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-    console.log(`Transaction: /transactions/${txHash}`);
+    console.log(`Transaction: https://devnet-explorer.elrond.com/transactions/${txHash}`);
     let explorer = `https://devnet-gateway.elrond.com/transaction/${txHash}?withResults=true`;
     let res = await axios.get(explorer);
     let value = res.data.data.transaction.smartContractResults[0].data;
     var result = value.substring(value.lastIndexOf("@") + 1);
     let pricestr = parseInt(result, 16);
+    let mintx = getMintTransaction(
+      "erd1qqqqqqqqqqqqqpgqjwnulxe3eyevsgyslqqfw8ev5juwd6ew5uhsk8ye2g",
+      18000000,
+      2,
+      pricestr,
+    );
+    mintx.setNonce(LoggedUserAccount.getNonceThenIncrement());
+    signer.sign(mintx);
+    await mintx.send(provider);
+    await mintx.awaitExecuted(provider);
+    const mnttxHash = mintx.getHash();
+    console.log(`Transaction: https://devnet-explorer.elrond.com/transactions/${mnttxHash}`);
     console.log(pricestr);
-    return contract;
   };
 
   console.log(abi());
