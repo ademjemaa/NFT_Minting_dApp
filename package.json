@@ -24,9 +24,11 @@
 
     "@elrondnetwork/erdjs-network-providers": "^0.1.5",
 
-    "@my-project/logo": "file:./../../../assets/img/",
+    "@my-project/logo": "file:./src/assets/img/",
 
     "axios": "0.21.1",
+
+    "babel-jest": "^26.6.0",
 
     "bootstrap": "4.6.0",
 

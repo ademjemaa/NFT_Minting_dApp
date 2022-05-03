@@ -29,12 +29,12 @@ export const getMintTransaction = (
     address: new Address(contractAddress),
   });
   return contract.call({
-    func: new ContractFunction("getNftPrice"),
+    func: new ContractFunction("mint"),
     gasLimit: new GasLimit(
       baseGasLimit + (baseGasLimit / 1.4) * (tokensAmount - 1)
     ),
-    //args: [new U32Value(tokens)],
-    //value: Balance.fromString(tokenSellingPrice).times(tokens),
+    args: [new U32Value(tokens)],
+    value: Balance.fromString(tokenSellingPrice).times(tokens),
   });
 };
 
@@ -77,12 +77,4 @@ export const publicEndpointSetup = async (provider: ProxyProvider) => {
     LoggedUserAccount,
     provider,
   };
-};
-
-export const parseQueryResultString = (queryResponse: QueryResponse) => {
-  const resultBuff = Buffer.from(
-    queryResponse?.returnData?.[0],
-    'base64'
-  ).toString('utf8');
-  return resultBuff;
 };
