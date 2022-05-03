@@ -9,6 +9,7 @@ import axios, { AxiosResponse } from "axios";
 import { Link } from "react-router-dom";
 import { dAppName } from "config";
 import { routeNames } from "routes";
+import BigNumber from 'bignumber.js';
 import { ProxyNetworkProvider } from "@elrondnetwork/erdjs-network-providers";
 import {
   Address,
@@ -162,7 +163,10 @@ export const Home: FC<Props> = () => {
     console.log(`Transaction: /transactions/${txHash}`);
     let explorer = `https://devnet-gateway.elrond.com/transaction/${txHash}?withResults=true`;
     let res = await axios.get(explorer);
-    console.log(res);
+    let value = res.data.data.transaction.smartContractResults[0].data;
+    var result = value.substring(value.lastIndexOf("@") + 1);
+    let pricestr = parseInt(result, 16);
+    console.log(pricestr);
     return contract;
   };
 
