@@ -250,30 +250,13 @@ export const Home: FC<Props> = () => {
                   className="btn btn-lg mt-3 text-white golden"
                   style={{
                     margin: "5px",
-
-                    backgroundColor: "#d2b48c",
+                    borderColor: "#d2b48c",
+                    backgroundColor: "#00665d",
                   }}
                 >
                   Mint
                 </button>
               ) : null}{" "}
-              {address ? (
-                <button
-                  className="btn btn-lg mt-3 text-white"
-                  style={{
-                    margin: "5px",
-                    backgroundColor: "#00665d",
-                  }}
-                  onClick={() => {
-                    window.open(
-                      "https://deadrare.io/collection/ZEB-9k4d2j",
-                      "_blank"
-                    );
-                  }}
-                >
-                  DeadRare
-                </button>
-              ) : null}
               <br />
               <br />
               <p className="mb-3">
@@ -300,7 +283,7 @@ export const Home: FC<Props> = () => {
               color: "white",
             }}
           >
-            We have set the gas limit to 1000 for the contract to successfully
+            We have set the gas limit to 14000000 for the contract to successfully
             mint your NFT. We recommend that you do not lower the gas limit.
           </p>
         </div>
