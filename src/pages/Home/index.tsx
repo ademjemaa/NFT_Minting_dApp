@@ -35,11 +35,12 @@ import "./Homeindex.css";
 //import { stringify } from "querystring";
 import data from "./test.json";
 import {
-  commonTxOperations,
   getMintTransaction,
   publicEndpointSetup,
   GetAddress,
   GetPrice,
+  MintTransaction,
+  PriceTransaction,
 } from "./utils";
 import { sign } from "crypto";
 import { config } from "process";
@@ -116,7 +117,7 @@ export const Home: FC<Props> = () => {
     return contract;
   }
 
-  const abi = async () => {
+  const mint = async () => {
     let networkProvider = new ProxyNetworkProvider(
       "https://devnet-gateway.elrond.com"
     );
@@ -124,41 +125,13 @@ export const Home: FC<Props> = () => {
     let provider = new ProxyProvider("https://devnet-gateway.elrond.com");
     await GetAddress(address);
     await syncProviderConfig(provider);
-    let pricetx = GetPrice(
-      "erd1qqqqqqqqqqqqqpgqjwnulxe3eyevsgyslqqfw8ev5juwd6ew5uhsk8ye2g",
-      18000000,
-    );
     const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
-    console.log(LoggedUserAccount.nonce);
-    pricetx.setNonce(LoggedUserAccount.getNonceThenIncrement());
-    signer.sign(pricetx);
-    console.log(LoggedUserAccount);
-    await pricetx.send(provider);
-    await pricetx.awaitExecuted(provider);
-    const txHash = pricetx.getHash();
-    axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-    console.log(`Transaction: https://devnet-explorer.elrond.com/transactions/${txHash}`);
-    let explorer = `https://devnet-gateway.elrond.com/transaction/${txHash}?withResults=true`;
-    let res = await axios.get(explorer);
-    let value = res.data.data.transaction.smartContractResults[0].data;
-    var result = value.substring(value.lastIndexOf("@") + 1);
-    let pricestr = parseInt(result, 16);
-    let mintx = getMintTransaction(
-      "erd1qqqqqqqqqqqqqpgqjwnulxe3eyevsgyslqqfw8ev5juwd6ew5uhsk8ye2g",
-      18000000,
-      2,
-      pricestr,
-    );
-    mintx.setNonce(LoggedUserAccount.getNonceThenIncrement());
-    signer.sign(mintx);
-    await mintx.send(provider);
-    await mintx.awaitExecuted(provider);
-    const mnttxHash = mintx.getHash();
-    console.log(`Transaction: https://devnet-explorer.elrond.com/transactions/${mnttxHash}`);
-    console.log(pricestr);
+    let pricestr = await PriceTransaction(signer, LoggedUserAccount, provider);
+    let minted = await MintTransaction(pricestr, 2, signer, LoggedUserAccount, provider);
+    console.log(minted);
   };
 
-  console.log(abi());
+  console.log(mint());
 
   return (
     <div
