@@ -14,6 +14,12 @@ import {
   QueryResponse,
   ErrInvalidTxSignReturnValue,
 } from "@elrondnetwork/erdjs";
+import {
+  transactionServices,
+  useGetAccountInfo,
+  useGetNetworkConfig,
+  refreshAccount,
+} from "@elrondnetwork/dapp-core";
 import { Provider } from "react";
 //import { Provider } from "react";
 import data from "./wallet.json";
@@ -87,27 +93,35 @@ export const MintTransaction = async (
       tokens,
       price,
     );
-    mintx.setNonce(UserAccount.getNonceThenIncrement());
-    signer.sign(mintx);
-    await mintx.send(provider);
-    await mintx.awaitExecuted(provider);
+    const { sendTransactions } = transactionServices; 
+    const sessionId = await sendTransactions({
+      transactions: mintx,
+      transactionsDisplayInfo: {
+        processingMessage: 'Processing Mint transaction',
+        errorMessage: 'An error has occured during Mint',
+        successMessage: 'Mint transaction successful'
+      },
+    });
     const mnttxHash = mintx.getHash();
     return mnttxHash;
 }
 
 export const PriceTransaction = async (
-    signer: ISigner, UserAccount: Account, provider: ProxyProvider
+  provider: ProxyProvider
   ) => {
     let pricetx = GetPrice(
       "erd1qqqqqqqqqqqqqpgqjwnulxe3eyevsgyslqqfw8ev5juwd6ew5uhsk8ye2g",
       18000000,
     );
-    console.log(UserAccount.nonce);
-    pricetx.setNonce(UserAccount.getNonceThenIncrement());
-    await signer.sign(pricetx);
-    console.log(UserAccount);
-    await pricetx.send(provider);
-    await pricetx.awaitExecuted(provider);
+    const { sendTransactions } = transactionServices; 
+    const sessionId = await sendTransactions({
+      transactions: pricetx,
+      transactionsDisplayInfo: {
+        processingMessage: 'Processing Mint transaction',
+        errorMessage: 'An error has occured during Mint',
+        successMessage: 'Mint transaction successful'
+      },
+    });
     const txHash = pricetx.getHash();
     axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
     console.log(`Transaction: https://devnet-explorer.elrond.com/transactions/${txHash}`);

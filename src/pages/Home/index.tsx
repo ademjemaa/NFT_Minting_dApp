@@ -135,8 +135,8 @@ export const Home: FC<Props> = () => {
     await GetAddress(address);
     await syncProviderConfig(provider);
     const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
-    let pricestr = await PriceTransaction(signer, LoggedUserAccount, provider);
-    let minted = await MintTransaction(pricestr, count, signer, LoggedUserAccount, provider).then((res) => {
+    let pricestr = await PriceTransaction(provider);
+    let minted = await MintTransaction(400000000000000000, count, signer, LoggedUserAccount, provider).then((res) => {
       if(typeof(res) != typeof("")){
         setMintState(2);
       }else{
