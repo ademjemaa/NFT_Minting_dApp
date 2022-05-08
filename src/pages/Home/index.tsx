@@ -53,10 +53,13 @@ interface Props {
 }
 
 export const Home: FC<Props> = () => {
-  const [count, setCount] = useState(0);
+  const [count , setCount] = useState(1);
+  let NFTPrice = "0.5 xEGLD";
+  let transactionUrl = "https://explorer.elrond.com/transactions/";
   const { address } = useGetAccountInfo();
+  const [mintState, setMintState] = useState(0); // 0 - null - 1 success - 2 failure - 3 loading
 
-  /**************************************************Block Jdid **************************/
+
   const { success, fail, hasActiveTransactions } =
     transactionServices.useGetActiveTransactionsStatus();
 
@@ -69,8 +72,14 @@ export const Home: FC<Props> = () => {
     transactions: [],
     transactionsFetched: undefined,
   });
+
+  const handleMint = () => {
+    setMintState(3);
+    mint();
+  }
+
   const account = useGetAccountInfo();
-  console.log("***ACCOUNT ADRESS***:", account.address); //erd14vwdlxxn93nxpph830f00y5g6qal3nndp7mtjg00verhtykp9nnqrmethw
+
 
   const fetchData = () => {
     if (success || fail || !hasActiveTransactions) {
@@ -92,7 +101,7 @@ export const Home: FC<Props> = () => {
 
   const add = (factor = 1) => {
     if (factor < 0) {
-      if (count > 0) setCount(count + factor);
+      if (count > 1) setCount(count + factor);
     } else {
       setCount(count + factor);
     }
@@ -127,11 +136,20 @@ export const Home: FC<Props> = () => {
     await syncProviderConfig(provider);
     const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
     let pricestr = await PriceTransaction(signer, LoggedUserAccount, provider);
-    let minted = await MintTransaction(pricestr, 2, signer, LoggedUserAccount, provider);
+    let minted = await MintTransaction(pricestr, count, signer, LoggedUserAccount, provider).then((res) => {
+      if(typeof(res) != typeof("")){
+        setMintState(2);
+      }else{
+        setMintState(1);
+      }
+      
+    });
+    transactionUrl = transactionUrl+minted;
+    console.log(transactionUrl);
     console.log(minted);
   };
 
-  console.log(mint());
+  //console.log(mint());
 
   return (
     <div
@@ -210,9 +228,12 @@ export const Home: FC<Props> = () => {
                   </button>
                 ) : null}
               </div>
-              {address ? (
+              {address && mintState!=3 ? (
+                
                 <button
                   className="btn btn-lg mt-3 text-white golden"
+                  onClick={handleMint}
+                  
                   style={{
                     margin: "5px",
                     borderColor: "#d2b48c",
@@ -220,14 +241,39 @@ export const Home: FC<Props> = () => {
                   }}
                 >
                   Mint
-                </button>
-              ) : null}{" "}
+                </button> 
+              ) : address && mintState==3 ? (
+                
+                <button
+                  className="btn btn-lg mt-3 text-white golden"
+                  onClick={handleMint}
+                  disabled
+                  style={{
+                    margin: "5px",
+                    borderColor: "#d2b48c",
+                    backgroundColor: "#00665d",
+                  }}
+                >
+                  Mint
+                </button> 
+              ) : null}
               <br />
               <br />
-              <p className="mb-3">
+              {mintState == 3 ? <p className="mb-3" style={{fontSize:'15px', fontWeight:'500', color:'blue'}}>
+                Transaction in Progress
+              </p> : mintState == 2 ?
+               <p className="mb-3" style={{fontSize:'15px', fontWeight:'500', color:'red'}}>
+                Mint Failed try again later or check your wallet for insufficent funds
+              </p> : mintState == 1 ? <p className="mb-3" style={{fontSize:'15px', fontWeight:'500', color:'green'}}>
+              Mint Success, <a href={transactionUrl}>Transaction details</a>
+            </p> : null}
+              {!address ? <p className="mb-3">
                 This is the official N4P foresters NFTs Minting Site
                 <br /> Login using your Elrond wallet.
-              </p>
+              </p> : <p className="mb-3">
+                This is the official N4P foresters NFTs Minting Site
+                <br /> NFT Price <span style={{color:'green',fontWeight:'500',fontSize:'17px'}}>{NFTPrice}</span>
+              </p>}
               {!address ? (
                 <Link
                   to={routeNames.unlock}

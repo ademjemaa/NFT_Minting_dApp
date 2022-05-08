@@ -12,6 +12,7 @@ import {
   Transaction,
   ISigner,
   QueryResponse,
+  ErrInvalidTxSignReturnValue,
 } from "@elrondnetwork/erdjs";
 import { Provider } from "react";
 //import { Provider } from "react";
@@ -83,7 +84,7 @@ export const MintTransaction = async (
     let mintx = getMintTransaction(
       "erd1qqqqqqqqqqqqqpgqjwnulxe3eyevsgyslqqfw8ev5juwd6ew5uhsk8ye2g",
       18000000,
-      2,
+      tokens,
       price,
     );
     mintx.setNonce(UserAccount.getNonceThenIncrement());
@@ -91,7 +92,7 @@ export const MintTransaction = async (
     await mintx.send(provider);
     await mintx.awaitExecuted(provider);
     const mnttxHash = mintx.getHash();
-    return `Transaction: https://devnet-explorer.elrond.com/transactions/${mnttxHash}`;
+    return mnttxHash;
 }
 
 export const PriceTransaction = async (
@@ -113,6 +114,7 @@ export const PriceTransaction = async (
     let explorer = `https://devnet-gateway.elrond.com/transaction/${txHash}?withResults=true`;
     let res = await axios.get(explorer);
     let value = res.data.data.transaction.smartContractResults[0].data;
+    console.log(value);
     var result = value.substring(value.lastIndexOf("@") + 1);
     return parseInt(result, 16);
   }
