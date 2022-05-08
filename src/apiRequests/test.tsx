@@ -19,7 +19,7 @@ import { promises } from "fs";
 
 async function abi() {
   let networkProvider = new ProxyNetworkProvider(
-    "https://devnet-gateway.elrond.com"
+    "https://gateway.elrond.com/"
   );
 
   let networkConfig = await networkProvider.getNetworkConfig();

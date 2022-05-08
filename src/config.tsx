@@ -1,4 +1,6 @@
 export const contractAddress =
-  'erd1qqqqqqqqqqqqqpgqdx22q4lg64w20fsscll2w5z5lc08whac5uhslwwwp7';
+  'erd1qqqqqqqqqqqqqpgq2g3n43mgzyms5ypxvpzdqctnqjlfzuacsz8q8xe3hd';
 
 export const dAppName = 'N4P Minting Site';
+
+export const GateWay = 'https://gateway.elrond.com';

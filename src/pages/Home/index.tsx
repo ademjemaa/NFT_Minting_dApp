@@ -27,13 +27,12 @@ import {
 //import * as fs from "fs";
 import { TransactionOnNetwork } from "@elrondnetwork/erdjs/out/transactionOnNetwork";
 import { getTransactions } from "apiRequests";
-import { contractAddress } from "config";
+import { contractAddress,GateWay } from "config";
 import logo from "./logo.png";
 import gif1 from "./gif1.gif";
 import { StateType } from "./types";
 import "./Homeindex.css";
 //import { stringify } from "querystring";
-import data from "./test.json";
 import {
   getMintTransaction,
   publicEndpointSetup,
@@ -42,8 +41,6 @@ import {
   MintTransaction,
   PriceTransaction,
 } from "./utils";
-import { sign } from "crypto";
-import { config } from "process";
 //import { propTypes } from "react-bootstrap/esm/Image";
 
 interface Props {
@@ -54,7 +51,7 @@ interface Props {
 
 export const Home: FC<Props> = () => {
   const [count , setCount] = useState(1);
-  let NFTPrice = "0.5 xEGLD";
+  let NFTPrice = 0.35;
   let transactionUrl = "https://explorer.elrond.com/transactions/";
   const { address } = useGetAccountInfo();
   const [mintState, setMintState] = useState(0); // 0 - null - 1 success - 2 failure - 3 loading
@@ -66,7 +63,6 @@ export const Home: FC<Props> = () => {
   const {
     network: { apiAddress },
   } = useGetNetworkConfig();
-  //console.log("******************", apiAddress); //https://devnet-api.elrond.com
 
   const [state, setState] = React.useState<StateType>({
     transactions: [],
@@ -125,18 +121,18 @@ export const Home: FC<Props> = () => {
 
     return contract;
   }
-
+  let provider = new ProxyProvider("https://gateway.elrond.com");
   const mint = async () => {
     let networkProvider = new ProxyNetworkProvider(
-      "https://devnet-gateway.elrond.com"
+      "https://gateway.elrond.com"
     );
     let networkConfig = await networkProvider.getNetworkConfig();
-    let provider = new ProxyProvider("https://devnet-gateway.elrond.com");
+    
     await GetAddress(address);
     await syncProviderConfig(provider);
     const { signer, LoggedUserAccount } = await publicEndpointSetup(provider);
-    let pricestr = await PriceTransaction(provider);
-    let minted = await MintTransaction(400000000000000000, count, signer, LoggedUserAccount, provider).then((res) => {
+    
+    let minted = await MintTransaction(350000000000000000, count, signer, LoggedUserAccount, provider).then((res) => {
       if(typeof(res) != typeof("")){
         setMintState(2);
       }else{
@@ -149,7 +145,6 @@ export const Home: FC<Props> = () => {
     console.log(minted);
   };
 
-  //console.log(mint());
 
   return (
     <div
@@ -272,7 +267,7 @@ export const Home: FC<Props> = () => {
                 <br /> Login using your Elrond wallet.
               </p> : <p className="mb-3">
                 This is the official N4P foresters NFTs Minting Site
-                <br /> NFT Price <span style={{color:'green',fontWeight:'500',fontSize:'17px'}}>{NFTPrice}</span>
+                <br /> NFT Price <span style={{color:'green',fontWeight:'500',fontSize:'17px'}}>{NFTPrice} xEGLD</span>
               </p>}
               {!address ? (
                 <Link
@@ -294,7 +289,7 @@ export const Home: FC<Props> = () => {
               color: "white",
             }}
           >
-            We have set the gas limit to 14000000 for the contract to successfully
+            We have set the gas limit to 180000000 for the contract to successfully
             mint your NFT. We recommend that you do not lower the gas limit.
           </p>
         </div>

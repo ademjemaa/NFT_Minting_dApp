@@ -24,7 +24,11 @@ import { Provider } from "react";
 //import { Provider } from "react";
 import data from "./wallet.json";
 import axios, { AxiosResponse } from "axios";
+import { contractAddress, GateWay } from "../../config";
+
+
 let LoggedUseraddress = "";
+
 
 export const getMintTransaction = (
   contractAddress: string,
@@ -88,7 +92,7 @@ export const MintTransaction = async (
     price: number, tokens: number, signer: ISigner, UserAccount: Account, provider: ProxyProvider
     ) => {
     let mintx = getMintTransaction(
-      "erd1qqqqqqqqqqqqqpgqjwnulxe3eyevsgyslqqfw8ev5juwd6ew5uhsk8ye2g",
+      contractAddress,
       18000000,
       tokens,
       price,
@@ -110,7 +114,7 @@ export const PriceTransaction = async (
   provider: ProxyProvider
   ) => {
     let pricetx = GetPrice(
-      "erd1qqqqqqqqqqqqqpgqjwnulxe3eyevsgyslqqfw8ev5juwd6ew5uhsk8ye2g",
+      contractAddress,
       18000000,
     );
     const { sendTransactions } = transactionServices; 
@@ -125,7 +129,7 @@ export const PriceTransaction = async (
     const txHash = pricetx.getHash();
     axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
     console.log(`Transaction: https://devnet-explorer.elrond.com/transactions/${txHash}`);
-    let explorer = `https://devnet-gateway.elrond.com/transaction/${txHash}?withResults=true`;
+    let explorer = `${GateWay}/transaction/${txHash}?withResults=true`;
     let res = await axios.get(explorer);
     let value = res.data.data.transaction.smartContractResults[0].data;
     console.log(value);
