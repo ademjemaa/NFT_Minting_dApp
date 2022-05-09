@@ -1,2 +1,2 @@
-# NFT_Minting_dApp
-NFT minting dApp
+# N4P Minting dapp
+minting dapp for N4P Foresters NFTs
