@@ -16,9 +16,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         style={{
           backgroundColor: "#2e765e",
           backgroundImage: "url(" + preview + ")",
-          backgroundPosition: "center",
           backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
         }}
       >
         <AuthenticatedRoutesWrapper
