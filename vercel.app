@@ -1,0 +1,1 @@
+vc-domain-verify=mint-n4p.vercell.app,32ba7f3c53542cbbfbf7
